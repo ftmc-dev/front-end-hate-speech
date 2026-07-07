@@ -1,0 +1,700 @@
+openapi: 3.0.3
+info:
+  title: DiscourseGuard API
+  description: |
+    API for Hate Speech Detection & Moderation System (DiscourseGuard).
+    This API allows text analysis for detecting hate speech and offensive language,
+    as well as managing strikes and user moderation status using a database.
+  version: 1.0.0
+servers:
+  - url: https://monitoring-suspicious-discussions-on-online-plat-production.up.railway.app
+    description: Production server
+  - url: http://localhost:5000
+    description: Local development server
+paths:
+  /:
+    get:
+      summary: API Information
+      description: Returns general status and list of available endpoints.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "online"
+                  message:
+                    type: string
+                    example: "DiscourseGuard API - Hate Speech Detection"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  endpoints:
+                    type: object
+                    additionalProperties:
+                      type: string
+                    example:
+                      "GET /": "This info"
+                      "GET /health": "Health check"
+                      "GET /api/strikes": "Get all strikes"
+                      "POST /predict": "Analyze text for hate speech"
+
+  /health:
+    get:
+      summary: Health Check
+      description: Returns health status of the API and SQLite database.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  database:
+                    type: string
+                    example: "SQLite"
+                  database_file:
+                    type: string
+                    example: "moderation.db"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2026-07-07T18:27:48.123456"
+
+  /predict:
+    post:
+      summary: Analyze Text
+      description: |
+        Analyzes a given text to classify it as Normal, Offensive, or Hate Speech.
+        If `user_id` and `username` are provided and the warning level is "medium" or "high",
+        a strike is automatically logged in the database for that user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: The text message to analyze.
+                  example: "This is a great day!"
+                user_id:
+                  type: string
+                  description: Optional Discord/platform user ID to track strikes.
+                  example: "1234567890"
+                username:
+                  type: string
+                  description: Optional platform username.
+                  example: "JohnDoe"
+      responses:
+        '200':
+          description: Analysis Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResult'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/strikes:
+    get:
+      summary: Get All Strikes
+      description: Retrieves a list of all logged moderation strikes, up to a limit of 200.
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of strikes to retrieve.
+          required: false
+          schema:
+            type: integer
+            default: 200
+      responses:
+        '200':
+          description: A list of strikes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 2
+                  strikes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Strike'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Add Strike Manually
+      description: Manually adds a moderation strike for a user and updates their status in the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - username
+                - message
+                - warning_level
+              properties:
+                user_id:
+                  type: string
+                  example: "user_123"
+                username:
+                  type: string
+                  example: "BadUser"
+                message:
+                  type: string
+                  example: "Offensive text here"
+                warning_level:
+                  type: string
+                  enum: [low, medium, high]
+                  example: "medium"
+                action_taken:
+                  type: string
+                  default: "warning"
+                  example: "warning"
+                hate_score:
+                  type: number
+                  format: float
+                  default: 0.0
+                  example: 0.15
+                offensive_score:
+                  type: number
+                  format: float
+                  default: 0.0
+                  example: 0.82
+                detection_method:
+                  type: string
+                  default: "ml_model"
+                  example: "manual"
+                matched_keyword:
+                  type: string
+                  nullable: true
+                  default: null
+                  example: null
+      responses:
+        '200':
+          description: Strike added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Strike saved"
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/strikes/{strike_id}/review:
+    put:
+      summary: Mark Strike as Reviewed
+      description: Marks a specific strike as reviewed (flagging it as dealt with).
+      parameters:
+        - name: strike_id
+          in: path
+          required: true
+          description: The numeric ID of the strike.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Strike marked as reviewed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Strike 45 marked as reviewed"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/strikes/{strike_id}:
+    delete:
+      summary: Delete Strike
+      description: Deletes a specific strike from the moderation database.
+      parameters:
+        - name: strike_id
+          in: path
+          required: true
+          description: The numeric ID of the strike.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Strike deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Strike 45 deleted"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users:
+    get:
+      summary: Get All Users
+      description: Retrieves all tracked users from the database, ordered by total strikes descending.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 10
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{user_id}/status:
+    put:
+      summary: Update User Status
+      description: Updates the moderation status (e.g. active, warned, suspended, banned) of a specific user.
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: The platform user ID.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [active, warned, suspended, banned]
+                  example: "suspended"
+      responses:
+        '200':
+          description: User status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "User 1234567890 status updated to suspended"
+        '400':
+          description: Invalid request body (missing status or invalid enum value)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{user_id}/strikes:
+    get:
+      summary: Get User Moderation Status
+      description: Retrieves the strikes, warnings, status, and category counts for a specific user.
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: The platform user ID.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserStrikesInfo'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/stats:
+    get:
+      summary: Get Overall Statistics
+      description: Returns counts of total strikes, high/medium/low risk strikes, reviewed status, and total users.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_strikes:
+                    type: integer
+                    example: 120
+                  high:
+                    type: integer
+                    example: 35
+                  medium:
+                    type: integer
+                    example: 40
+                  low:
+                    type: integer
+                    example: 45
+                  reviewed:
+                    type: integer
+                    example: 80
+                  total_users:
+                    type: integer
+                    example: 22
+                  pending:
+                    type: integer
+                    example: 40
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/db-status:
+    get:
+      summary: Check Database Status
+      description: Returns database file existence, size, list of tables, and path.
+      responses:
+        '200':
+          description: Database status information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exists:
+                    type: boolean
+                    example: true
+                  path:
+                    type: string
+                    example: "C:\\Users\\FTMC\\OneDrive\\Projects\\hate_speech_detector\\moderation.db"
+                  size_bytes:
+                    type: integer
+                    example: 28672
+                  size_kb:
+                    type: number
+                    example: 28.0
+                  tables:
+                    type: array
+                    items:
+                      type: string
+                    example: ["strikes", "users"]
+                  message:
+                    type: string
+                    example: "✅ Database is working!"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/test:
+    get:
+      summary: Test API
+      description: Simple endpoint to test if the API is active.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "API is working!"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2026-07-07T18:27:48.123456"
+
+  /api/test-save:
+    get:
+      summary: Test Save Data
+      description: Inserts mock test data to the database to ensure write operations work.
+      responses:
+        '200':
+          description: Test data saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Test data saved to database! Check /api/strikes"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /admin:
+    get:
+      summary: Serve Admin Dashboard
+      description: Returns the static HTML administration dashboard.
+      responses:
+        '200':
+          description: HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /test:
+    get:
+      summary: Serve Test Page
+      description: Returns the static HTML text prediction interface.
+      responses:
+        '200':
+          description: HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error message details"
+
+    PredictionResult:
+      type: object
+      properties:
+        prediction:
+          type: string
+          description: The predicted label category.
+          example: "Offensive"
+        label:
+          type: string
+          description: Normalized label in lower case.
+          enum: [normal, offensive, hate_speech]
+          example: "offensive"
+        label_id:
+          type: integer
+          description: Code ID representing the prediction (0 = Normal, 1 = Offensive, 2 = Hate Speech).
+          example: 1
+        is_suspicious:
+          type: boolean
+          description: True if label is Offensive or Hate Speech.
+          example: true
+        warning_level:
+          type: string
+          description: Risk-level classification based on prediction details.
+          enum: [none, low, medium, high]
+          example: "medium"
+        confidence_scores:
+          type: object
+          properties:
+            normal:
+              type: number
+              format: float
+              example: 0.125
+            offensive:
+              type: number
+              format: float
+              example: 0.812
+            hate_speech:
+              type: number
+              format: float
+              example: 0.063
+        original_text:
+          type: string
+          example: "Stupid jerk, get out!"
+        preprocessed_text:
+          type: string
+          example: "stupid jerk get out"
+        detection_method:
+          type: string
+          description: How the prediction was computed.
+          example: "ml_model"
+        matched_keyword:
+          type: string
+          nullable: true
+          example: null
+
+    Strike:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: string
+          example: "1234567890"
+        username:
+          type: string
+          example: "JohnDoe"
+        message:
+          type: string
+          example: "This is bad text"
+        warning_level:
+          type: string
+          example: "medium"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-07-07T18:27:48.123456"
+        action_taken:
+          type: string
+          example: "warning"
+        reviewed:
+          type: boolean
+          example: false
+        hate_score:
+          type: number
+          format: float
+          example: 0.05
+        offensive_score:
+          type: number
+          format: float
+          example: 0.91
+        detection_method:
+          type: string
+          example: "ml_model"
+        matched_keyword:
+          type: string
+          nullable: true
+          example: null
+
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "JohnDoe"
+        strikes:
+          type: integer
+          example: 3
+        warnings:
+          type: integer
+          example: 0
+        status:
+          type: string
+          enum: [active, warned, suspended, banned]
+          example: "active"
+        last_seen:
+          type: string
+          format: date-time
+          example: "2026-07-07T18:27:48.123456"
+        high_strikes:
+          type: integer
+          example: 1
+        medium_strikes:
+          type: integer
+          example: 2
+
+    UserStrikesInfo:
+      type: object
+      properties:
+        strikes:
+          type: integer
+          example: 3
+        warnings:
+          type: integer
+          example: 1
+        status:
+          type: string
+          example: "active"
+        high_strikes:
+          type: integer
+          example: 1
+        medium_strikes:
+          type: integer
+          example: 2

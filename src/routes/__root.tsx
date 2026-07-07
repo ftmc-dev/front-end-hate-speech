@@ -8,6 +8,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { client as SpeechClient } from "@/services/api/client.gen.ts"
 
 function NotFoundComponent() {
   return (
@@ -96,6 +97,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  SpeechClient.setConfig({
+    baseURL: import.meta.env.VITE_REST_BASE_URL,
+  });
+
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />

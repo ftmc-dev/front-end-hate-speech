@@ -14,6 +14,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { formatDistanceToNow } from "date-fns";
+import { useFetchUsers } from "@/hooks/useFetchUsers.ts";
 
 export const Route = createFileRoute("/_app/users")({
   head: () => ({ meta: [{ title: "Users · DiscourseGuard" }] }),
@@ -28,15 +29,18 @@ const statusConfig: Record<UserStatus, { label: string; cls: string; Icon: typeo
 };
 
 function UsersPage() {
-  const users = useStore((s) => s.users);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
+  const { data: users, isFetching, isLoading } = useFetchUsers()
 
   const filtered = useMemo(() => {
-    return users
-      .filter((u) => (status === "all" ? true : u.status === status))
-      .filter((u) => (!q ? true : u.username.toLowerCase().includes(q.toLowerCase())))
-      .sort((a, b) => b.strikes - a.strikes);
+    if (users) {
+      return users.filter((u) => (status === "all" ? true : u.status === status))
+        .filter((u) => (!q ? true : u.username?.toLowerCase().includes(q.toLowerCase())))
+        .sort((a, b) => b.strikes - a.strikes);
+    }
+
+    return []
   }, [users, q, status]);
 
   const counts = useMemo(() => ({
