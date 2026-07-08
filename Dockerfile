@@ -1,20 +1,50 @@
-FROM node:22-alpine AS builder
+FROM node:22 AS base
 WORKDIR /app
 
+# Déclaration de l'argument
 ARG VITE_REST_BASE_URL=https://monitoring-suspicious-discussions-on-online-plat-production.up.railway.app
 
-COPY package*.json vite.config.ts ./
+# --- ÉTAPE 1 : DÉPENDANCES ---
+# Correction du warning : "as" -> "AS"
+FROM base AS deps
+COPY package.json vite.config.ts ./
 COPY . .
-
 RUN npm install
 
+# --- ÉTAPE 2 : BUILD ---
+FROM base AS builder
+# On réinjecte l'argument
+ARG VITE_REST_BASE_URL=https://monitoring-suspicious-discussions-on-online-plat-production.up.railway.app
+# CRUCIAL POUR VITE : Transformer l'ARG en variable d'environnement
+ENV VITE_REST_BASE_URL=$VITE_REST_BASE_URL
+
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 RUN npm run build
-FROM nginx:1.25-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-RUN mkdir -p /etc/nginx/ssl
+# --- ÉTAPE 3 : SERVEUR DE PRODUCTION (RUNNER) ---
+FROM base AS runner
+WORKDIR /app
 
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80 443
+# Création de l'utilisateur non-root (le nom "nitro" est juste une convention)
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nitro
 
-CMD ["nginx", "-g", "daemon off;"]
+# OPTIMISATION NITRO :
+# Au lieu de copier tout "/app", on copie uniquement le dossier de production ".output"
+# (Si votre build génère un autre dossier comme "dist", adaptez le chemin)
+COPY --from=builder /app/.output ./.output
+
+# On donne les droits à l'utilisateur nitro sur le dossier
+RUN chown -R nitro:nodejs ./.output
+
+USER nitro
+
+EXPOSE 3000
+# Correction du warning : ajout du "="
+ENV PORT=3000
+ENV HOST=0.0.0.0
+
+# Démarrage du serveur Nitro (le point d'entrée standard de Nitro)
+CMD ["node", ".output/server/index.mjs"]
