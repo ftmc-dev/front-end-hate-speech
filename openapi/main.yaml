@@ -308,8 +308,8 @@ paths:
                     type: integer
                     example: 10
                   users:
-                    type: array
-                    items:
+                    type: object
+                    additionalProperties:
                       $ref: '#/components/schemas/User'
         '500':
           description: Internal Server Error

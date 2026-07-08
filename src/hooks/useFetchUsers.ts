@@ -1,21 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { DefaultService } from "@/services/api"
+import { DefaultService } from "@/services/api";
 
 export const useFetchUsers = () => {
   return useQuery({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: async () => {
-      const { data, error } = await DefaultService.getApiUsers()
+      const { data, error } = await DefaultService.getApiUsers();
 
       if (error) {
-        throw error
+        throw error;
       }
 
-      return data
+      return data;
     },
     select(data) {
-      return data.users
-    }
-  })
-}
+      const users = data.users;
+
+      if (users) {
+        return Object.keys(users).map((key) => ({
+          ...users[key],
+          id: key,
+        }));
+      }
+
+      return [];
+    },
+  });
+};

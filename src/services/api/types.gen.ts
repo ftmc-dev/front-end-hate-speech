@@ -321,7 +321,9 @@ export type GetApiUsers_Responses = {
      */
     200: {
         total?: number;
-        users?: Array<User>;
+        users?: {
+            [key: string]: User;
+        };
     };
 };
 
