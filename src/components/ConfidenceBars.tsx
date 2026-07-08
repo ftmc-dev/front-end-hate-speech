@@ -18,16 +18,31 @@ export function ConfidenceBars({
     <div className={cn("space-y-1.5", compact && "space-y-1")}>
       {entries.map(([label, val]) => (
         <div key={label} className="flex items-center gap-2">
-          <span className={cn("text-muted-foreground shrink-0", compact ? "text-[10px] w-16" : "text-xs w-20")}>
+          <span
+            className={cn(
+              "text-muted-foreground shrink-0",
+              compact ? "text-[10px] w-16" : "text-xs w-20",
+            )}
+          >
             {label}
           </span>
-          <div className={cn("flex-1 rounded-full bg-muted overflow-hidden", compact ? "h-1.5" : "h-2")}>
+          <div
+            className={cn(
+              "flex-1 rounded-full bg-muted overflow-hidden",
+              compact ? "h-1.5" : "h-2",
+            )}
+          >
             <div
               className={cn("h-full rounded-full transition-all", colors[label])}
               style={{ width: `${(val * 100).toFixed(1)}%` }}
             />
           </div>
-          <span className={cn("tabular-nums font-medium text-foreground", compact ? "text-[10px] w-9" : "text-xs w-12")}>
+          <span
+            className={cn(
+              "tabular-nums font-medium text-foreground",
+              compact ? "text-[10px] w-9" : "text-xs w-12",
+            )}
+          >
             {(val * 100).toFixed(1)}%
           </span>
         </div>

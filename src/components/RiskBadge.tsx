@@ -3,10 +3,18 @@ import type { RiskLevel } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const map: Record<RiskLevel, { label: string; cls: string; Icon: typeof ShieldCheck }> = {
-  safe:   { label: "Safe",     cls: "bg-success/15 text-success border-success/30",           Icon: ShieldCheck },
-  low:    { label: "Low",      cls: "bg-chart-2/15 text-chart-2 border-chart-2/30",           Icon: Info },
-  medium: { label: "Medium",   cls: "bg-warning/20 text-warning-foreground border-warning/40",Icon: AlertTriangle },
-  high:   { label: "High",     cls: "bg-destructive/15 text-destructive border-destructive/40",Icon: AlertOctagon },
+  safe: { label: "Safe", cls: "bg-success/15 text-success border-success/30", Icon: ShieldCheck },
+  low: { label: "Low", cls: "bg-chart-2/15 text-chart-2 border-chart-2/30", Icon: Info },
+  medium: {
+    label: "Medium",
+    cls: "bg-warning/20 text-warning-foreground border-warning/40",
+    Icon: AlertTriangle,
+  },
+  high: {
+    label: "High",
+    cls: "bg-destructive/15 text-destructive border-destructive/40",
+    Icon: AlertOctagon,
+  },
 };
 
 export function RiskBadge({ level, size = "sm" }: { level: RiskLevel; size?: "sm" | "md" }) {
