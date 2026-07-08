@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/select";
 import { formatDistanceToNow } from "date-fns";
 import { useFetchUsers } from "@/hooks/useFetchUsers.ts";
+import { User } from "@/services/api";
+import { useUserAccess } from "@/hooks/useUserAccess.ts";
 
 export const Route = createFileRoute("/_app/users")({
   head: () => ({ meta: [{ title: "Users · DiscourseGuard" }] }),
@@ -163,8 +165,8 @@ function UsersPage() {
           </TableHeader>
           <TableBody>
             {filtered.map((u) => {
-              const s = statusConfig[(u.status as keyof typeof statusConfig) || "active"];
               const currentUserStrikes = u.strikes ?? 0;
+              const s = statusConfig[(u.status as keyof typeof statusConfig) || "active"];
 
               return (
                 <TableRow key={u.id}>
@@ -204,50 +206,7 @@ function UsersPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex gap-1 justify-end">
-                      {currentUserStrikes > 0 && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => {
-                            store.resetUserStrikes(u.id);
-                            toast.success(`Reset strikes for ${u.username}`);
-                          }}
-                        >
-                          <RotateCcw className="w-3.5 h-3.5 mr-1" /> Reset
-                        </Button>
-                      )}
-                      {u.status !== "banned" && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-destructive"
-                          onClick={() => {
-                            store.updateUser(u.id, {
-                              status: "banned",
-                              strikes: 3,
-                              lastOffense: Date.now(),
-                            });
-                            toast.success(`Banned ${u.username}`);
-                          }}
-                        >
-                          <Ban className="w-3.5 h-3.5 mr-1" /> Ban
-                        </Button>
-                      )}
-                      {u.status === "banned" && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-success"
-                          onClick={() => {
-                            store.updateUser(u.id, { status: "active", strikes: 0 });
-                            toast.success(`Unbanned ${u.username}`);
-                          }}
-                        >
-                          <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Unban
-                        </Button>
-                      )}
-                    </div>
+                    <UserAccessColumn user={u} />
                   </TableCell>
                 </TableRow>
               );
@@ -262,6 +221,35 @@ function UsersPage() {
           </TableBody>
         </Table>
       </Card>
+    </div>
+  );
+}
+
+function UserAccessColumn({ user }: { user: User & { id: string } }) {
+  const { activateUser, banUser } = useUserAccess(user.id);
+
+  return (
+    <div className="flex gap-1 justify-end">
+      {user.status !== "banned" && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-destructive"
+          onClick={() => banUser(user.username)}
+        >
+          <Ban className="w-3.5 h-3.5 mr-1" /> Ban
+        </Button>
+      )}
+      {user.status === "banned" && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-success"
+          onClick={() => activateUser(user.username)}
+        >
+          <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Unban
+        </Button>
+      )}
     </div>
   );
 }

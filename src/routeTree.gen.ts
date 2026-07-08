@@ -58,15 +58,9 @@ const AppApiTesterRoute = AppApiTesterRouteImport.update({
   path: '/api-tester',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => AppRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/analytics': typeof AppAnalyticsRoute
   '/api-tester': typeof AppApiTesterRoute
   '/dashboard': typeof AppDashboardRoute
   '/discord-bot': typeof AppDiscordBotRoute
@@ -76,7 +70,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/analytics': typeof AppAnalyticsRoute
   '/api-tester': typeof AppApiTesterRoute
   '/dashboard': typeof AppDashboardRoute
   '/discord-bot': typeof AppDiscordBotRoute
@@ -88,7 +81,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
-  '/_app/analytics': typeof AppAnalyticsRoute
   '/_app/api-tester': typeof AppApiTesterRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/discord-bot': typeof AppDiscordBotRoute
@@ -100,7 +92,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/analytics'
     | '/api-tester'
     | '/dashboard'
     | '/discord-bot'
@@ -110,7 +101,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/analytics'
     | '/api-tester'
     | '/dashboard'
     | '/discord-bot'
@@ -121,7 +111,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_app'
-    | '/_app/analytics'
     | '/_app/api-tester'
     | '/_app/dashboard'
     | '/_app/discord-bot'
@@ -193,18 +182,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApiTesterRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/analytics': {
-      id: '/_app/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof AppAnalyticsRouteImport
-      parentRoute: typeof AppRoute
-    }
   }
 }
 
 interface AppRouteChildren {
-  AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppApiTesterRoute: typeof AppApiTesterRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDiscordBotRoute: typeof AppDiscordBotRoute
@@ -214,7 +195,6 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAnalyticsRoute: AppAnalyticsRoute,
   AppApiTesterRoute: AppApiTesterRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDiscordBotRoute: AppDiscordBotRoute,

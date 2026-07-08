@@ -1,7 +1,14 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, MessageSquareWarning, Users, BarChart3, TerminalSquare,
-  Bot, Settings, Shield, Github, Sparkles,
+  LayoutDashboard,
+  MessageSquareWarning,
+  Users,
+  TerminalSquare,
+  Bot,
+  Settings,
+  Shield,
+  Github,
+  Sparkles,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +18,6 @@ const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/messages", label: "Message Queue", icon: MessageSquareWarning },
   { to: "/users", label: "Users", icon: Users },
-  { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/api-tester", label: "API Tester", icon: TerminalSquare },
   { to: "/discord-bot", label: "Discord Bot", icon: Bot },
   { to: "/settings", label: "Settings", icon: Settings },
@@ -20,7 +26,9 @@ const nav = [
 export function AppShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const pending = useStore((s) => s.messages.filter((m) => !m.reviewed).length);
-  const highRisk = useStore((s) => s.messages.filter((m) => m.warning === "high" && !m.reviewed).length);
+  const highRisk = useStore(
+    (s) => s.messages.filter((m) => m.warning === "high" && !m.reviewed).length,
+  );
 
   return (
     <div className="min-h-screen flex">
@@ -30,8 +38,12 @@ export function AppShell() {
             <Shield className="w-5 h-5 text-white" strokeWidth={2.5} />
           </div>
           <div>
-            <div className="font-display font-bold text-lg tracking-tight leading-none">DiscourseGuard</div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">ML Moderation</div>
+            <div className="font-display font-bold text-lg tracking-tight leading-none">
+              DiscourseGuard
+            </div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">
+              ML Moderation
+            </div>
           </div>
         </Link>
         <nav className="flex-1 p-4 space-y-1">
@@ -39,7 +51,8 @@ export function AppShell() {
             const active = pathname === to || (to !== "/dashboard" && pathname.startsWith(to));
             return (
               <Link
-                key={to} to={to}
+                key={to}
+                to={to}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
                   active
@@ -50,7 +63,10 @@ export function AppShell() {
                 <Icon className="w-4 h-4" />
                 <span className="flex-1">{label}</span>
                 {to === "/messages" && pending > 0 && (
-                  <Badge variant={active ? "secondary" : "default"} className="h-5 px-1.5 text-[10px]">
+                  <Badge
+                    variant={active ? "secondary" : "default"}
+                    className="h-5 px-1.5 text-[10px]"
+                  >
                     {pending}
                   </Badge>
                 )}
@@ -65,7 +81,9 @@ export function AppShell() {
               Model Live
             </div>
             <div className="text-[11px] text-muted-foreground leading-relaxed">
-              Logistic Regression + SMOTE · Macro F1 <span className="font-semibold text-foreground">0.74</span> · Acc <span className="font-semibold text-foreground">88%</span>
+              Logistic Regression + SMOTE · Macro F1{" "}
+              <span className="font-semibold text-foreground">0.74</span> · Acc{" "}
+              <span className="font-semibold text-foreground">88%</span>
             </div>
             {highRisk > 0 && (
               <div className="text-[11px] text-destructive font-medium">
@@ -86,7 +104,9 @@ export function AppShell() {
               <span className="font-display font-bold">DiscourseGuard</span>
             </Link>
             <a
-              href="https://github.com" target="_blank" rel="noreferrer"
+              href="https://github.com"
+              target="_blank"
+              rel="noreferrer"
               className="p-2 rounded-lg hover:bg-muted text-muted-foreground"
               aria-label="GitHub"
             >
@@ -98,10 +118,13 @@ export function AppShell() {
               const active = pathname === to;
               return (
                 <Link
-                  key={to} to={to}
+                  key={to}
+                  to={to}
                   className={cn(
                     "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs whitespace-nowrap",
-                    active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted",
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted",
                   )}
                 >
                   <Icon className="w-3.5 h-3.5" />
