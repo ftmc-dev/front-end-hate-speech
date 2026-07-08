@@ -5,7 +5,6 @@ WORKDIR /app
 ARG VITE_REST_BASE_URL=https://monitoring-suspicious-discussions-on-online-plat-production.up.railway.app
 
 # --- ÉTAPE 1 : DÉPENDANCES ---
-# Correction du warning : "as" -> "AS"
 FROM base AS deps
 COPY package.json vite.config.ts ./
 COPY . .
@@ -27,24 +26,22 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
-# Création de l'utilisateur non-root (le nom "nitro" est juste une convention)
+# Création de l'utilisateur non-root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nitro
 
-# OPTIMISATION NITRO :
-# Au lieu de copier tout "/app", on copie uniquement le dossier de production ".output"
-# (Si votre build génère un autre dossier comme "dist", adaptez le chemin)
+# On copie le build Nitro ET le package.json
 COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/package.json ./package.json
 
-# On donne les droits à l'utilisateur nitro sur le dossier
-RUN chown -R nitro:nodejs ./.output
+# On donne les droits à l'utilisateur nitro sur les deux éléments
+RUN chown -R nitro:nodejs ./.output ./package.json
 
 USER nitro
 
 EXPOSE 3000
-# Correction du warning : ajout du "="
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
-# Démarrage du serveur Nitro (le point d'entrée standard de Nitro)
+# Démarrage du serveur Nitro
 CMD ["node", ".output/server/index.mjs"]
