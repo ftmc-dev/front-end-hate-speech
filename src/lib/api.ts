@@ -11,25 +11,49 @@ export interface ClassifyResponse {
 
 // Curated whitelist / keyword lists — mirror the Flask three-layer pipeline
 const SAFE_PHRASES = [
-  "kill it with fire", "killing it", "you're killing it", "sick beat", "sick track",
-  "that's insane", "dying laughing", "dead lol", "no offense",
+  "kill it with fire",
+  "killing it",
+  "you're killing it",
+  "sick beat",
+  "sick track",
+  "that's insane",
+  "dying laughing",
+  "dead lol",
+  "no offense",
 ];
 
 const HATE_KEYWORDS = [
-  "your kind", "go back to", "should be banned", "don't belong", "subhuman",
-  "inferior race", "get rid of them", "exterminate",
+  "your kind",
+  "go back to",
+  "should be banned",
+  "don't belong",
+  "subhuman",
+  "inferior race",
+  "get rid of them",
+  "exterminate",
 ];
 
 const OFFENSIVE_KEYWORDS = [
-  "idiot", "stupid", "moron", "trash", "garbage", "loser", "shut up", "get lost",
-  "dumb", "pathetic",
+  "idiot",
+  "stupid",
+  "moron",
+  "trash",
+  "garbage",
+  "loser",
+  "shut up",
+  "get lost",
+  "dumb",
+  "pathetic",
 ];
 
 function mockClassify(text: string): ClassifyResponse {
   const lower = text.toLowerCase().trim();
   if (!lower) {
     return {
-      prediction: "Normal", label: "Empty input", warning: "safe", method: "safe_phrase",
+      prediction: "Normal",
+      label: "Empty input",
+      warning: "safe",
+      method: "safe_phrase",
       confidence: { Normal: 1, Offensive: 0, "Hate Speech": 0 },
     };
   }
@@ -37,7 +61,10 @@ function mockClassify(text: string): ClassifyResponse {
   const safe = SAFE_PHRASES.find((p) => lower.includes(p));
   if (safe) {
     return {
-      prediction: "Normal", label: "Safe Phrase Override", warning: "safe", method: "safe_phrase",
+      prediction: "Normal",
+      label: "Safe Phrase Override",
+      warning: "safe",
+      method: "safe_phrase",
       matched_keyword: safe,
       confidence: { Normal: 0.95, Offensive: 0.04, "Hate Speech": 0.01 },
     };
@@ -46,21 +73,28 @@ function mockClassify(text: string): ClassifyResponse {
   const hate = HATE_KEYWORDS.find((k) => lower.includes(k));
   if (hate) {
     return {
-      prediction: "Hate Speech", label: "Keyword Match — Hate Speech", warning: "high", method: "keyword",
+      prediction: "Hate Speech",
+      label: "Keyword Match — Hate Speech",
+      warning: "high",
+      method: "keyword",
       matched_keyword: hate,
-      confidence: { Normal: 0.05, Offensive: 0.15, "Hate Speech": 0.80 },
+      confidence: { Normal: 0.05, Offensive: 0.15, "Hate Speech": 0.8 },
     };
   }
   const offensive = OFFENSIVE_KEYWORDS.find((k) => lower.includes(k));
   if (offensive) {
     return {
-      prediction: "Offensive", label: "Keyword Match — Offensive", warning: "medium", method: "keyword",
+      prediction: "Offensive",
+      label: "Keyword Match — Offensive",
+      warning: "medium",
+      method: "keyword",
       matched_keyword: offensive,
-      confidence: { Normal: 0.18, Offensive: 0.72, "Hate Speech": 0.10 },
+      confidence: { Normal: 0.18, Offensive: 0.72, "Hate Speech": 0.1 },
     };
   }
   // Layer 3: pseudo-ML — simple heuristic scoring
-  let hateScore = 0, offScore = 0;
+  let hateScore = 0,
+    offScore = 0;
   const hateSignals = ["hate", "disgusting people", "should die", "worthless"];
   const offSignals = ["hate this", "sucks", "annoying", "ugly", "worst"];
   hateSignals.forEach((s) => lower.includes(s) && (hateScore += 0.28));
@@ -77,11 +111,17 @@ function mockClassify(text: string): ClassifyResponse {
   let warning: RiskLevel = "safe";
   let label = "Normal Speech";
   if (conf["Hate Speech"] > 0.5) {
-    prediction = "Hate Speech"; warning = "high"; label = "Hate Speech Detected";
+    prediction = "Hate Speech";
+    warning = "high";
+    label = "Hate Speech Detected";
   } else if (conf.Offensive > 0.45) {
-    prediction = "Offensive"; warning = conf.Offensive > 0.6 ? "medium" : "low"; label = "Offensive Language";
+    prediction = "Offensive";
+    warning = conf.Offensive > 0.6 ? "medium" : "low";
+    label = "Offensive Language";
   } else if (conf.Offensive > 0.25) {
-    prediction = "Offensive"; warning = "low"; label = "Low-Risk Offensive";
+    prediction = "Offensive";
+    warning = "low";
+    label = "Low-Risk Offensive";
   }
   return { prediction, label, warning, method: "ml_model", confidence: conf };
 }
@@ -106,7 +146,9 @@ export async function classifyText(
   }
 }
 
-export async function pingApi(apiUrl: string): Promise<{ ok: boolean; latencyMs?: number; error?: string }> {
+export async function pingApi(
+  apiUrl: string,
+): Promise<{ ok: boolean; latencyMs?: number; error?: string }> {
   const t0 = performance.now();
   try {
     const res = await fetch(`${apiUrl.replace(/\/$/, "")}/health`, { method: "GET" });

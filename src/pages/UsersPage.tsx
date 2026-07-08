@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, ShieldCheck, Ban, Clock, AlertTriangle, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
@@ -26,11 +25,6 @@ import { useFetchUsers } from "@/hooks/useFetchUsers.ts";
 import { User } from "@/services/api";
 import { useUserAccess } from "@/hooks/useUserAccess.ts";
 
-export const Route = createFileRoute("/_app/users")({
-  head: () => ({ meta: [{ title: "Users · DiscourseGuard" }] }),
-  component: UsersPage,
-});
-
 const statusConfig: Record<UserStatus, { label: string; cls: string; Icon: typeof ShieldCheck }> = {
   active: {
     label: "Active",
@@ -50,7 +44,7 @@ const statusConfig: Record<UserStatus, { label: string; cls: string; Icon: typeo
   },
 };
 
-function UsersPage() {
+export default function UsersPage() {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
   const { data: users, isFetching, isLoading } = useFetchUsers();

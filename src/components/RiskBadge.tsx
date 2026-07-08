@@ -17,8 +17,15 @@ const map: Record<RiskLevel, { label: string; cls: string; Icon: typeof ShieldCh
   },
 };
 
-export function RiskBadge({ level, size = "sm" }: { level: RiskLevel; size?: "sm" | "md" }) {
-  const { label, cls, Icon } = map[level];
+export function RiskBadge({
+  level,
+  size = "sm",
+}: {
+  level?: RiskLevel | string;
+  size?: "sm" | "md";
+}) {
+  const normalizedLevel = isRiskLevel(level) ? level : "safe";
+  const { label, cls, Icon } = map[normalizedLevel];
   return (
     <span
       className={cn(
@@ -31,4 +38,8 @@ export function RiskBadge({ level, size = "sm" }: { level: RiskLevel; size?: "sm
       {label} Risk
     </span>
   );
+}
+
+function isRiskLevel(level: unknown): level is RiskLevel {
+  return typeof level === "string" && level in map;
 }

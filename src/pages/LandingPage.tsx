@@ -1,18 +1,18 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Shield, Bot, Cpu, Layers, Zap, CheckCircle2, ArrowRight, Github, BarChart3 } from "lucide-react";
+import { Link } from "react-router";
+import {
+  Shield,
+  Bot,
+  Cpu,
+  Layers,
+  Zap,
+  CheckCircle2,
+  ArrowRight,
+  Github,
+  BarChart3,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "DiscourseGuard — ML-powered content moderation" },
-      { name: "description", content: "End-to-end machine learning system for detecting hate speech on Discord, Reddit and HackerNews. 88% accuracy, 0.74 Macro F1, three-layer decision pipeline." },
-    ],
-  }),
-  component: Landing,
-});
-
-function Landing() {
+export default function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* Nav */}
@@ -25,17 +25,32 @@ function Landing() {
             <span className="font-display font-bold text-lg">DiscourseGuard</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <a href="#pipeline" className="text-muted-foreground hover:text-foreground">Pipeline</a>
-            <a href="#features" className="text-muted-foreground hover:text-foreground">Features</a>
-            <a href="#metrics" className="text-muted-foreground hover:text-foreground">Metrics</a>
-            <a href="#stack" className="text-muted-foreground hover:text-foreground">Stack</a>
+            <a href="#pipeline" className="text-muted-foreground hover:text-foreground">
+              Pipeline
+            </a>
+            <a href="#features" className="text-muted-foreground hover:text-foreground">
+              Features
+            </a>
+            <a href="#metrics" className="text-muted-foreground hover:text-foreground">
+              Metrics
+            </a>
+            <a href="#stack" className="text-muted-foreground hover:text-foreground">
+              Stack
+            </a>
           </nav>
           <div className="flex items-center gap-2">
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="p-2 rounded-md text-muted-foreground hover:bg-muted">
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noreferrer"
+              className="p-2 rounded-md text-muted-foreground hover:bg-muted"
+            >
               <Github className="w-4 h-4" />
             </a>
             <Button asChild size="sm" className="bg-gradient-primary shadow-elegant">
-              <Link to="/dashboard">Open Dashboard <ArrowRight className="w-4 h-4 ml-1" /></Link>
+              <Link to="/dashboard">
+                Open Dashboard <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
             </Button>
           </div>
         </div>
@@ -51,15 +66,21 @@ function Landing() {
             </div>
             <h1 className="mt-6 text-5xl md:text-6xl font-display font-bold tracking-tight leading-[1.05]">
               Monitor suspicious discussions with{" "}
-              <span className="bg-gradient-primary bg-clip-text text-transparent">machine learning</span>.
+              <span className="bg-gradient-primary bg-clip-text text-transparent">
+                machine learning
+              </span>
+              .
             </h1>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-xl">
-              DiscourseGuard is an end-to-end MLOps hate speech detection system: three-layer Flask API,
-              Discord moderation bot with graduated enforcement, and a professional admin dashboard.
+              DiscourseGuard is an end-to-end MLOps hate speech detection system: three-layer Flask
+              API, Discord moderation bot with graduated enforcement, and a professional admin
+              dashboard.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="bg-gradient-primary shadow-elegant">
-                <Link to="/dashboard">Launch Dashboard <ArrowRight className="w-4 h-4 ml-1" /></Link>
+                <Link to="/dashboard">
+                  Launch Dashboard <ArrowRight className="w-4 h-4 ml-1" />
+                </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link to="/api-tester">Try the API</Link>
@@ -73,7 +94,9 @@ function Landing() {
               ].map((s) => (
                 <div key={s.l}>
                   <dt className="text-3xl font-display font-bold text-primary">{s.k}</dt>
-                  <dd className="text-xs uppercase tracking-widest text-muted-foreground mt-1">{s.l}</dd>
+                  <dd className="text-xs uppercase tracking-widest text-muted-foreground mt-1">
+                    {s.l}
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -91,10 +114,12 @@ function Landing() {
                     <div className="text-[10px] text-muted-foreground">POST /classify</div>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-1 rounded-md bg-success/15 text-success">200 OK</span>
+                <span className="text-[10px] font-mono px-2 py-1 rounded-md bg-success/15 text-success">
+                  200 OK
+                </span>
               </div>
               <pre className="mt-4 text-[11px] leading-relaxed font-mono text-foreground/80 overflow-x-auto">
-{`{
+                {`{
   "prediction": "Hate Speech",
   "label":      "Hate Speech Detected",
   "warning":    "high",
@@ -127,25 +152,44 @@ function Landing() {
       <section id="pipeline" className="py-24 border-t border-border/60">
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-2xl">
-            <div className="text-xs font-semibold text-primary uppercase tracking-widest">Decision pipeline</div>
+            <div className="text-xs font-semibold text-primary uppercase tracking-widest">
+              Decision pipeline
+            </div>
             <h2 className="mt-3 text-4xl font-display font-bold">Three layers, one decision.</h2>
             <p className="mt-4 text-muted-foreground">
-              Speed and interpretability from rules; generalization from the model. Every response tells moderators
-              exactly why a message was flagged.
+              Speed and interpretability from rules; generalization from the model. Every response
+              tells moderators exactly why a message was flagged.
             </p>
           </div>
           <div className="mt-12 grid md:grid-cols-3 gap-6">
             {[
-              { i: Zap, t: "Safe-Phrase Override", d: "Whitelist idioms like \"kill it with fire\" so context-preserving expressions never trigger false positives.", tag: "Layer 1" },
-              { i: Layers, t: "Keyword Rule Layer", d: "Curated unambiguous hate-speech terms. Returns a matched_keyword field for moderator interpretability.", tag: "Layer 2" },
-              { i: Cpu, t: "Logistic Regression + SMOTE", d: "TF-IDF (5K features) → LR trained with SMOTE oversampling. 88% accuracy, 0.74 Macro F1.", tag: "Layer 3" },
+              {
+                i: Zap,
+                t: "Safe-Phrase Override",
+                d: 'Whitelist idioms like "kill it with fire" so context-preserving expressions never trigger false positives.',
+                tag: "Layer 1",
+              },
+              {
+                i: Layers,
+                t: "Keyword Rule Layer",
+                d: "Curated unambiguous hate-speech terms. Returns a matched_keyword field for moderator interpretability.",
+                tag: "Layer 2",
+              },
+              {
+                i: Cpu,
+                t: "Logistic Regression + SMOTE",
+                d: "TF-IDF (5K features) → LR trained with SMOTE oversampling. 88% accuracy, 0.74 Macro F1.",
+                tag: "Layer 3",
+              },
             ].map(({ i: Icon, t, d, tag }) => (
               <div key={t} className="glass-panel rounded-2xl p-6 shadow-card-soft">
                 <div className="flex items-center justify-between">
                   <div className="w-10 h-10 rounded-xl bg-gradient-shield grid place-items-center">
                     <Icon className="w-5 h-5 text-white" strokeWidth={2.5} />
                   </div>
-                  <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">{tag}</span>
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+                    {tag}
+                  </span>
                 </div>
                 <h3 className="mt-5 text-lg font-semibold">{t}</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{d}</p>
@@ -156,14 +200,33 @@ function Landing() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-24 border-t border-border/60 bg-gradient-to-b from-transparent to-accent/20">
+      <section
+        id="features"
+        className="py-24 border-t border-border/60 bg-gradient-to-b from-transparent to-accent/20"
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-6">
             {[
-              { i: BarChart3, t: "Admin dashboard", d: "Review queue, filter by risk, override decisions, track user strikes, visualize risk distribution and detection-method breakdowns." },
-              { i: Bot, t: "Discord moderation bot", d: "Three-strike escalation: warn → 24h timeout → ban. High-risk messages deleted before anyone sees them, logged privately." },
-              { i: Shield, t: "Human-in-the-loop", d: "Every automatic action is auditable. Moderators can override, confirm, or reset user status at any time." },
-              { i: Cpu, t: "MLOps discipline", d: "TF-IDF fitted on train split only (no leakage), stopwords intentionally kept, Macro F1 optimized for the minority Hate Speech class." },
+              {
+                i: BarChart3,
+                t: "Admin dashboard",
+                d: "Review queue, filter by risk, override decisions, track user strikes, visualize risk distribution and detection-method breakdowns.",
+              },
+              {
+                i: Bot,
+                t: "Discord moderation bot",
+                d: "Three-strike escalation: warn → 24h timeout → ban. High-risk messages deleted before anyone sees them, logged privately.",
+              },
+              {
+                i: Shield,
+                t: "Human-in-the-loop",
+                d: "Every automatic action is auditable. Moderators can override, confirm, or reset user status at any time.",
+              },
+              {
+                i: Cpu,
+                t: "MLOps discipline",
+                d: "TF-IDF fitted on train split only (no leakage), stopwords intentionally kept, Macro F1 optimized for the minority Hate Speech class.",
+              },
             ].map(({ i: Icon, t, d }) => (
               <div key={t} className="glass-panel rounded-2xl p-6 flex gap-4">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 grid place-items-center shrink-0">
@@ -183,11 +246,15 @@ function Landing() {
       <section id="metrics" className="py-24 border-t border-border/60">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="text-xs font-semibold text-primary uppercase tracking-widest">Model evaluation</div>
-            <h2 className="mt-3 text-4xl font-display font-bold">Chosen on Macro F1, not accuracy.</h2>
+            <div className="text-xs font-semibold text-primary uppercase tracking-widest">
+              Model evaluation
+            </div>
+            <h2 className="mt-3 text-4xl font-display font-bold">
+              Chosen on Macro F1, not accuracy.
+            </h2>
             <p className="mt-4 text-muted-foreground">
-              Accuracy is dominated by the majority "Normal" class. Macro F1 weighs the minority "Hate Speech" class
-              equally — the metric that actually matters for moderation.
+              Accuracy is dominated by the majority "Normal" class. Macro F1 weighs the minority
+              "Hate Speech" class equally — the metric that actually matters for moderation.
             </p>
             <ul className="mt-6 space-y-3 text-sm">
               {[
@@ -207,28 +274,37 @@ function Landing() {
             <div className="text-sm font-semibold mb-4">Per-class metrics (held-out test)</div>
             <div className="space-y-4">
               {[
-                { c: "Normal",       p: 0.92, r: 0.94, f: 0.93 },
-                { c: "Offensive",    p: 0.85, r: 0.87, f: 0.86 },
-                { c: "Hate Speech",  p: 0.61, r: 0.56, f: 0.58 },
+                { c: "Normal", p: 0.92, r: 0.94, f: 0.93 },
+                { c: "Offensive", p: 0.85, r: 0.87, f: 0.86 },
+                { c: "Hate Speech", p: 0.61, r: 0.56, f: 0.58 },
               ].map((r) => (
                 <div key={r.c}>
                   <div className="flex justify-between text-xs font-medium">
                     <span>{r.c}</span>
-                    <span className="font-mono text-muted-foreground">P {r.p} · R {r.r} · F1 {r.f}</span>
+                    <span className="font-mono text-muted-foreground">
+                      P {r.p} · R {r.r} · F1 {r.f}
+                    </span>
                   </div>
                   <div className="mt-1.5 h-2 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full bg-gradient-primary" style={{ width: `${r.f * 100}%` }} />
+                    <div
+                      className="h-full bg-gradient-primary"
+                      style={{ width: `${r.f * 100}%` }}
+                    />
                   </div>
                 </div>
               ))}
               <div className="pt-4 mt-4 border-t border-border grid grid-cols-2 gap-4 text-center">
                 <div>
                   <div className="text-3xl font-display font-bold text-primary">88%</div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Accuracy</div>
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    Accuracy
+                  </div>
                 </div>
                 <div>
                   <div className="text-3xl font-display font-bold text-primary">0.74</div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Macro F1</div>
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    Macro F1
+                  </div>
                 </div>
               </div>
             </div>
@@ -239,24 +315,38 @@ function Landing() {
       {/* Stack */}
       <section id="stack" className="py-24 border-t border-border/60 bg-accent/10">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-xs font-semibold text-primary uppercase tracking-widest">Deployment</div>
-          <h2 className="mt-3 text-4xl font-display font-bold max-w-2xl">From notebook to production.</h2>
+          <div className="text-xs font-semibold text-primary uppercase tracking-widest">
+            Deployment
+          </div>
+          <h2 className="mt-3 text-4xl font-display font-bold max-w-2xl">
+            From notebook to production.
+          </h2>
           <div className="mt-10 grid md:grid-cols-4 gap-4 text-sm">
             {[
-              { t: "Data",       v: "27,510 labeled samples · Davidson 2017 + Reddit + HackerNews · 3 classes" },
-              { t: "Model",      v: "Preprocessing → TF-IDF (5K) → Logistic Regression + SMOTE" },
-              { t: "Serving",    v: "Flask REST API · three-layer pipeline · deployed on Railway" },
-              { t: "Clients",    v: "React admin dashboard + discord.py moderation bot with strike escalation" },
+              {
+                t: "Data",
+                v: "27,510 labeled samples · Davidson 2017 + Reddit + HackerNews · 3 classes",
+              },
+              { t: "Model", v: "Preprocessing → TF-IDF (5K) → Logistic Regression + SMOTE" },
+              { t: "Serving", v: "Flask REST API · three-layer pipeline · deployed on Railway" },
+              {
+                t: "Clients",
+                v: "React admin dashboard + discord.py moderation bot with strike escalation",
+              },
             ].map((x) => (
               <div key={x.t} className="glass-panel rounded-xl p-5">
-                <div className="text-[10px] uppercase tracking-widest text-primary font-semibold">{x.t}</div>
+                <div className="text-[10px] uppercase tracking-widest text-primary font-semibold">
+                  {x.t}
+                </div>
                 <div className="mt-2 text-sm text-foreground/80 leading-relaxed">{x.v}</div>
               </div>
             ))}
           </div>
           <div className="mt-12 text-center">
             <Button asChild size="lg" className="bg-gradient-primary shadow-elegant">
-              <Link to="/dashboard">Open the moderation dashboard <ArrowRight className="w-4 h-4 ml-1" /></Link>
+              <Link to="/dashboard">
+                Open the moderation dashboard <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
             </Button>
           </div>
         </div>

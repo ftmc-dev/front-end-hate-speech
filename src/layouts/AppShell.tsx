@@ -1,4 +1,4 @@
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { Link, Outlet, useLocation } from "react-router";
 import {
   LayoutDashboard,
   MessageSquareWarning,
@@ -24,7 +24,7 @@ const nav = [
 ];
 
 export function AppShell() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { pathname } = useLocation();
   const pending = useStore((s) => s.messages.filter((m) => !m.reviewed).length);
   const highRisk = useStore(
     (s) => s.messages.filter((m) => m.warning === "high" && !m.reviewed).length,

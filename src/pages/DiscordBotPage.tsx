@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Bot, Send, Trash2, User as UserIcon, ShieldAlert, Clock, Ban } from "lucide-react";
 import { toast } from "sonner";
@@ -9,11 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RiskBadge } from "@/components/RiskBadge";
-
-export const Route = createFileRoute("/_app/discord-bot")({
-  head: () => ({ meta: [{ title: "Discord Bot Simulator · DiscourseGuard" }] }),
-  component: DiscordSim,
-});
 
 interface ChatMsg {
   id: string;
@@ -26,11 +20,21 @@ interface ChatMsg {
 
 const SEED_USERS = ["troll_master99", "alex_dev", "angry_user42", "jenny_writes", "curious_mind"];
 
-function DiscordSim() {
+export default function DiscordBotPage() {
   const settings = useStore((s) => s.settings);
   const [messages, setMessages] = useState<ChatMsg[]>([
-    { id: "s1", author: "jenny_writes", content: "Hey everyone! Welcome to #general 👋", ts: Date.now() - 60000 },
-    { id: "s2", author: "curious_mind", content: "Loving the new dashboard, the ML pipeline is smooth", ts: Date.now() - 45000 },
+    {
+      id: "s1",
+      author: "jenny_writes",
+      content: "Hey everyone! Welcome to #general 👋",
+      ts: Date.now() - 60000,
+    },
+    {
+      id: "s2",
+      author: "curious_mind",
+      content: "Loving the new dashboard, the ML pipeline is smooth",
+      ts: Date.now() - 45000,
+    },
   ]);
   const [author, setAuthor] = useState("troll_master99");
   const [input, setInput] = useState("");
@@ -50,7 +54,10 @@ function DiscordSim() {
     setMessages((prev) => [...prev, { id, author, content, ts: Date.now() }]);
 
     // Classify
-    const res = await classifyText(content, { apiUrl: settings.apiUrl, useMock: settings.useMockApi });
+    const res = await classifyText(content, {
+      apiUrl: settings.apiUrl,
+      useMock: settings.useMockApi,
+    });
 
     let botAction: ChatMsg["botAction"] | undefined;
     let deleted = false;
@@ -80,19 +87,32 @@ function DiscordSim() {
     if (res.warning !== "safe") {
       store.addMessage({
         id: `m${Date.now()}`,
-        content, author, channel: "#general", platform: "Discord",
+        content,
+        author,
+        channel: "#general",
+        platform: "Discord",
         createdAt: Date.now(),
-        prediction: res.prediction, label: res.label, warning: res.warning, method: res.method,
-        matchedKeyword: res.matched_keyword, confidence: res.confidence,
+        prediction: res.prediction,
+        label: res.label,
+        warning: res.warning,
+        method: res.method,
+        matchedKeyword: res.matched_keyword,
+        confidence: res.confidence,
         action: deleted
-          ? (botAction?.type === "ban" ? "banned" : botAction?.type === "timeout" ? "timeout" : "deleted")
-          : (botAction?.type === "warn" ? "warned" : "logged"),
+          ? botAction?.type === "ban"
+            ? "banned"
+            : botAction?.type === "timeout"
+              ? "timeout"
+              : "deleted"
+          : botAction?.type === "warn"
+            ? "warned"
+            : "logged",
         reviewed: false,
       });
     }
 
     // Update message with deletion state + bot action
-    setMessages((prev) => prev.map((m) => m.id === id ? { ...m, deleted, botAction } : m));
+    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, deleted, botAction } : m)));
     setSending(false);
   };
 
@@ -102,14 +122,20 @@ function DiscordSim() {
     <div className="p-6 lg:p-10 max-w-6xl mx-auto space-y-6">
       <header className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-xs font-semibold text-primary uppercase tracking-widest">Simulator</div>
-          <h1 className="mt-2 text-3xl lg:text-4xl font-display font-bold">Discord Moderation Bot</h1>
+          <div className="text-xs font-semibold text-primary uppercase tracking-widest">
+            Simulator
+          </div>
+          <h1 className="mt-2 text-3xl lg:text-4xl font-display font-bold">
+            Discord Moderation Bot
+          </h1>
           <p className="mt-1.5 text-sm text-muted-foreground max-w-2xl">
-            Live simulation of the discord.py bot. High-risk messages are deleted before anyone sees them,
-            users progress through a three-strike escalation (warn → timeout → ban).
+            Live simulation of the discord.py bot. High-risk messages are deleted before anyone sees
+            them, users progress through a three-strike escalation (warn → timeout → ban).
           </p>
         </div>
-        <Button variant="outline" onClick={clear}><Trash2 className="w-3.5 h-3.5 mr-1" /> Clear</Button>
+        <Button variant="outline" onClick={clear}>
+          <Trash2 className="w-3.5 h-3.5 mr-1" /> Clear
+        </Button>
       </header>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -131,7 +157,9 @@ function DiscordSim() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">
                     <span className="font-semibold text-sm">{m.author}</span>
-                    <span className="text-[10px] text-muted-foreground">{new Date(m.ts).toLocaleTimeString()}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {new Date(m.ts).toLocaleTimeString()}
+                    </span>
                   </div>
                   {m.deleted ? (
                     <div className="mt-1 text-xs italic text-muted-foreground border-l-2 border-destructive/40 pl-2">
@@ -149,7 +177,9 @@ function DiscordSim() {
               </div>
             ))}
             {sending && (
-              <div className="text-xs text-muted-foreground italic">DiscourseGuard is classifying…</div>
+              <div className="text-xs text-muted-foreground italic">
+                DiscourseGuard is classifying…
+              </div>
             )}
           </div>
           <div className="border-t border-border/60 p-3 bg-card">
@@ -161,7 +191,11 @@ function DiscordSim() {
                   onChange={(e) => setAuthor(e.target.value)}
                   className="bg-transparent outline-none font-medium"
                 >
-                  {SEED_USERS.map((u) => <option key={u} value={u}>{u}</option>)}
+                  {SEED_USERS.map((u) => (
+                    <option key={u} value={u}>
+                      {u}
+                    </option>
+                  ))}
                 </select>
               </div>
               <Input
@@ -187,21 +221,38 @@ function DiscordSim() {
             <h3 className="font-semibold">Enforcement rules</h3>
           </div>
           <div className="space-y-3">
-            <Rule risk="high"   Icon={ShieldAlert} title="Delete + strike" desc="Message removed before anyone sees it. Private warning DM'd. Logged to mod channel." />
-            <Rule risk="medium" Icon={ShieldAlert} title="Public warning" desc="Message stays. Bot posts a public warning in-channel." />
-            <Rule risk="low"    Icon={ShieldAlert} title="Silent log" desc="No visible action. Logged to the queue for moderators." />
+            <Rule
+              risk="high"
+              Icon={ShieldAlert}
+              title="Delete + strike"
+              desc="Message removed before anyone sees it. Private warning DM'd. Logged to mod channel."
+            />
+            <Rule
+              risk="medium"
+              Icon={ShieldAlert}
+              title="Public warning"
+              desc="Message stays. Bot posts a public warning in-channel."
+            />
+            <Rule
+              risk="low"
+              Icon={ShieldAlert}
+              title="Silent log"
+              desc="No visible action. Logged to the queue for moderators."
+            />
           </div>
           <div className="mt-6 pt-6 border-t border-border/60">
-            <div className="text-xs font-semibold mb-2 uppercase tracking-widest text-muted-foreground">Strike escalation</div>
+            <div className="text-xs font-semibold mb-2 uppercase tracking-widest text-muted-foreground">
+              Strike escalation
+            </div>
             <div className="space-y-2 text-sm">
-              <StrikeStep n={1} Icon={ShieldAlert}   text="DM warning" />
-              <StrikeStep n={2} Icon={Clock}         text="24h timeout" />
-              <StrikeStep n={3} Icon={Ban}           text="Automatic ban" />
+              <StrikeStep n={1} Icon={ShieldAlert} text="DM warning" />
+              <StrikeStep n={2} Icon={Clock} text="24h timeout" />
+              <StrikeStep n={3} Icon={Ban} text="Automatic ban" />
             </div>
           </div>
           <p className="mt-6 text-[11px] text-muted-foreground leading-relaxed">
-            Test the flow: try sending messages as <span className="font-mono">troll_master99</span> containing hate keywords —
-            watch strikes escalate. Manage the user on the Users page.
+            Test the flow: try sending messages as <span className="font-mono">troll_master99</span>{" "}
+            containing hate keywords — watch strikes escalate. Manage the user on the Users page.
           </p>
         </Card>
       </div>
@@ -211,20 +262,35 @@ function DiscordSim() {
 
 function BotAction({ action }: { action: NonNullable<ChatMsg["botAction"]> }) {
   const map = {
-    warn:    { label: "Bot warning",    cls: "bg-warning/20 text-warning-foreground border-warning/40" },
-    delete:  { label: "Message deleted",cls: "bg-destructive/15 text-destructive border-destructive/40" },
+    warn: { label: "Bot warning", cls: "bg-warning/20 text-warning-foreground border-warning/40" },
+    delete: {
+      label: "Message deleted",
+      cls: "bg-destructive/15 text-destructive border-destructive/40",
+    },
     timeout: { label: "User timed out", cls: "bg-chart-2/15 text-chart-2 border-chart-2/30" },
-    ban:     { label: "User banned",    cls: "bg-destructive/15 text-destructive border-destructive/40" },
-    log:     { label: "Logged",         cls: "bg-muted text-muted-foreground border-border" },
+    ban: { label: "User banned", cls: "bg-destructive/15 text-destructive border-destructive/40" },
+    log: { label: "Logged", cls: "bg-muted text-muted-foreground border-border" },
   }[action.type];
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md border text-[11px] font-medium ${map.cls}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md border text-[11px] font-medium ${map.cls}`}
+    >
       <Bot className="w-3 h-3" /> {map.label} — {action.reason}
     </span>
   );
 }
 
-function Rule({ risk, Icon, title, desc }: { risk: "high" | "medium" | "low"; Icon: typeof ShieldAlert; title: string; desc: string }) {
+function Rule({
+  risk,
+  Icon,
+  title,
+  desc,
+}: {
+  risk: "high" | "medium" | "low";
+  Icon: typeof ShieldAlert;
+  title: string;
+  desc: string;
+}) {
   return (
     <div className="p-3 rounded-lg border border-border/60 bg-muted/30">
       <div className="flex items-center gap-2 mb-1">
@@ -240,7 +306,9 @@ function Rule({ risk, Icon, title, desc }: { risk: "high" | "medium" | "low"; Ic
 function StrikeStep({ n, Icon, text }: { n: number; Icon: typeof ShieldAlert; text: string }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="w-7 h-7 rounded-full bg-primary/10 text-primary grid place-items-center text-xs font-bold">{n}</div>
+      <div className="w-7 h-7 rounded-full bg-primary/10 text-primary grid place-items-center text-xs font-bold">
+        {n}
+      </div>
       <Icon className="w-4 h-4 text-muted-foreground" />
       <span>{text}</span>
     </div>

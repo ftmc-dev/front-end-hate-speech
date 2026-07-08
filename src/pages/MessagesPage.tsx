@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Filter, Check, X, MessageSquare, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -26,12 +25,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useDeleteMessage, useFetchMessages } from "@/hooks/useFetchMessages.ts";
 import { Strike } from "@/services/api";
 
-export const Route = createFileRoute("/_app/messages")({
-  head: () => ({ meta: [{ title: "Message Queue · DiscourseGuard" }] }),
-  component: MessagesPage,
-});
-
-function MessagesPage() {
+export default function MessagesPage() {
   const { data: strikes } = useFetchMessages();
 
   const [query, setQuery] = useState("");

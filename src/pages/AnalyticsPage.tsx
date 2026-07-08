@@ -1,15 +1,9 @@
 import { useMemo } from "react";
 import { PieChart as PieIcon } from "lucide-react";
-import { createFileRoute } from "@tanstack/react-router";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 import { Card } from "@/components/ui/card";
 import { useFetchMessages } from "@/hooks/useFetchMessages.ts";
-
-export const Route = createFileRoute("/_app/analytics")({
-  head: () => ({ meta: [{ title: "Analytics · DiscourseGuard" }] }),
-  component: AnalyticsPage,
-});
 
 const COLORS = {
   Offensive: "oklch(0.75 0.16 70)",
@@ -18,7 +12,7 @@ const COLORS = {
   teal: "oklch(0.65 0.15 195)",
 };
 
-function AnalyticsPage() {
+export default function AnalyticsPage() {
   const { data: messages = [] } = useFetchMessages();
 
   const riskDist = useMemo(() => {

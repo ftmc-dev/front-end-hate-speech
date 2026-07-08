@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { useMemo } from "react";
 import {
   Users,
@@ -27,12 +27,7 @@ import { useStatistics } from "@/hooks/useDashboardData.ts";
 import { useFetchMessages } from "@/hooks/useFetchMessages.ts";
 import { RiskDistribution } from "@/components/RiskDistribution.tsx";
 
-export const Route = createFileRoute("/_app/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard · DiscourseGuard" }] }),
-  component: Dashboard,
-});
-
-function Dashboard() {
+export default function DashboardPage() {
   const { data: stats } = useStatistics();
   const { data: users = [] } = useFetchUsers();
   const { data: messages = [] } = useFetchMessages();

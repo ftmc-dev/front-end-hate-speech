@@ -104,9 +104,10 @@
   --sidebar-border: oklch(0.9 0.015 250);
   --sidebar-ring: oklch(0.55 0.18 268);
 
-  --gradient-hero: radial-gradient(1200px 600px at 10% -10%, oklch(0.88 0.09 268 / 0.55), transparent 60%),
-                   radial-gradient(900px 500px at 100% 0%, oklch(0.9 0.08 195 / 0.5), transparent 60%),
-                   linear-gradient(180deg, oklch(0.985 0.008 240), oklch(0.96 0.02 250));
+  --gradient-hero:
+    radial-gradient(1200px 600px at 10% -10%, oklch(0.88 0.09 268 / 0.55), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, oklch(0.9 0.08 195 / 0.5), transparent 60%),
+    linear-gradient(180deg, oklch(0.985 0.008 240), oklch(0.96 0.02 250));
   --gradient-primary: linear-gradient(135deg, oklch(0.42 0.19 268), oklch(0.55 0.2 240));
   --gradient-shield: linear-gradient(135deg, oklch(0.5 0.2 268), oklch(0.62 0.16 200));
   --shadow-elegant: 0 10px 40px -12px oklch(0.42 0.19 268 / 0.25);
@@ -118,7 +119,8 @@
   * {
     border-color: var(--color-border);
   }
-  html, body {
+  html,
+  body {
     font-family: var(--font-sans);
   }
   body {
@@ -127,7 +129,11 @@
     color: var(--color-foreground);
     min-height: 100vh;
   }
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
