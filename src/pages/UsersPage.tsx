@@ -160,7 +160,8 @@ export default function UsersPage() {
           <TableBody>
             {filtered.map((u) => {
               const currentUserStrikes = u.strikes ?? 0;
-              const s = statusConfig[(u.status as keyof typeof statusConfig) || "active"];
+              const ps = u.status ? statusConfig[(u.status as keyof typeof statusConfig)] : statusConfig["active"];
+              const s = ps || statusConfig["active"]
 
               return (
                 <TableRow key={u.id}>
