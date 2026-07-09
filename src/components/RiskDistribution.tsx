@@ -14,7 +14,7 @@ const COLORS = {
 
 export function RiskDistribution({ strikes }: { strikes: Strike[] }) {
   const riskDist = useMemo(() => {
-    const dist = { Normal: 0, Offensive: 0, "Hate Speech": 0 };
+    const dist = { Offensive: 0, "Hate Speech": 0 };
     strikes.forEach((m) => {
       dist.Offensive += m.offensive_score ?? 0;
       dist["Hate Speech"] += m.hate_score ?? 0;

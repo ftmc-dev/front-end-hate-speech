@@ -13,7 +13,7 @@ import UsersPage from "@/pages/UsersPage";
 export function AppRoutes() {
   return (
     <Routes>
-      <Route index element={<LandingPage />} />
+      <Route index element={<DashboardPage />} />
       <Route element={<AppShell />}>
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="messages" element={<MessagesPage />} />
