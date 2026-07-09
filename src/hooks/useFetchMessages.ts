@@ -1,8 +1,11 @@
 import { toast } from "sonner";
 import { DefaultService } from "@/services/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useStrikersCount } from "@/hooks/useStrikersCount.tsx";
 
 export const useFetchMessages = () => {
+  const { setCount } = useStrikersCount();
+
   return useQuery({
     queryKey: ["strikes"],
     queryFn: async () => {
@@ -12,6 +15,7 @@ export const useFetchMessages = () => {
         throw error;
       }
 
+      setCount(data?.total ?? 0);
       return data;
     },
     select: (data) => data.strikes ?? [],

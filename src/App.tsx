@@ -5,6 +5,7 @@ import { Link } from "react-router";
 
 import { Toaster } from "@/components/ui/sonner";
 import { AppRoutes } from "@/routes/AppRoutes";
+import { StrikersCountProvider } from "@/hooks/useStrikersCount";
 import { client as SpeechClient } from "@/services/api/client.gen.ts";
 
 const queryClient = new QueryClient();
@@ -17,7 +18,9 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppErrorBoundary>
-        <AppRoutes />
+        <StrikersCountProvider>
+          <AppRoutes />
+        </StrikersCountProvider>
       </AppErrorBoundary>
       <Toaster position="top-right" richColors />
     </QueryClientProvider>

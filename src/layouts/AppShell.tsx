@@ -13,22 +13,24 @@ import {
 import { useStore } from "@/lib/store";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useStrikersCount } from "@/hooks/useStrikersCount.tsx";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/messages", label: "Message Queue", icon: MessageSquareWarning },
   { to: "/users", label: "Users", icon: Users },
   { to: "/api-tester", label: "API Tester", icon: TerminalSquare },
-  { to: "/discord-bot", label: "Discord Bot", icon: Bot },
+  // { to: "/discord-bot", label: "Discord Bot", icon: Bot },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function AppShell() {
   const { pathname } = useLocation();
-  const pending = useStore((s) => s.messages.filter((m) => !m.reviewed).length);
   const highRisk = useStore(
     (s) => s.messages.filter((m) => m.warning === "high" && !m.reviewed).length,
   );
+
+  const { count } = useStrikersCount();
 
   return (
     <div className="min-h-screen flex">
@@ -62,12 +64,12 @@ export function AppShell() {
               >
                 <Icon className="w-4 h-4" />
                 <span className="flex-1">{label}</span>
-                {to === "/messages" && pending > 0 && (
+                {to === "/messages" && count > 0 && (
                   <Badge
                     variant={active ? "secondary" : "default"}
                     className="h-5 px-1.5 text-[10px]"
                   >
-                    {pending}
+                    {count}
                   </Badge>
                 )}
               </Link>
