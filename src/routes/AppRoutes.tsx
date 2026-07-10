@@ -1,19 +1,19 @@
 import { Link, Navigate, Route, Routes, useNavigate } from "react-router";
 
+import LoginPage from "@/pages/LoginPage";
+import UsersPage from "@/pages/UsersPage";
 import { AppShell } from "@/layouts/AppShell";
+import SettingsPage from "@/pages/SettingsPage";
+import MessagesPage from "@/pages/MessagesPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import ApiTesterPage from "@/pages/ApiTesterPage";
 import DashboardPage from "@/pages/DashboardPage";
 import DiscordBotPage from "@/pages/DiscordBotPage";
-import LandingPage from "@/pages/LandingPage";
-import MessagesPage from "@/pages/MessagesPage";
-import SettingsPage from "@/pages/SettingsPage";
-import UsersPage from "@/pages/UsersPage";
 
 export function AppRoutes() {
   return (
     <Routes>
-      <Route index element={<DashboardPage />} />
+      <Route index element={<LoginPage />} />
       <Route element={<AppShell />}>
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="messages" element={<MessagesPage />} />
