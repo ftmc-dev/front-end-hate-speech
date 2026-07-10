@@ -1,17 +1,9 @@
 server {
-  listen ${PORT};
-  server_name _;
-
-  root /usr/share/nginx/html;
-  index index.html;
-
-  location / {
-    try_files $uri $uri/ /index.html;
-  }
-
-  location ~* \.(?:css|js|mjs|ico|png|jpg|jpeg|gif|svg|webp|woff2?)$ {
-    expires 1y;
-    add_header Cache-Control "public, immutable";
-    try_files $uri =404;
-  }
+    listen 80;
+    server_name  localhost;
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
 }
