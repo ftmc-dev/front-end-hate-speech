@@ -15,9 +15,9 @@ COPY . .
 
 RUN npm run build
 
-FROM nginx:1.27-alpine
+FROM nginx:stable-alpine
 
-COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
